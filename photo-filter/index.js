@@ -1,5 +1,5 @@
 class PhotoFilter {
-  constructor(initialState){
+  constructor(initialState) {
     this.state = initialState;
   }
   reset() {
@@ -10,30 +10,102 @@ class PhotoFilter {
       sepia: 0,
       saturare: 0,
       hue: 0,
-    }
+    };
+    const filterInputs = document.querySelectorAll(".filters label > input");
+    const filterOutputs = document.querySelectorAll(".filters label > output");
+    console.log(filterOutputs)
+    filterInputs.forEach(item  =>{
+      console.log(filterInputs)
+      console.log(item.value)
+      item.value = 0;
+    })
+    filterOutputs.forEach(item  =>{
+      item.innerHTML = 0;
+    })
   }
-  nextPicture(){
+  nextPicture() {
     this.state = {
       ...this.state,
       currentPicture: this.state.currentPicture + 1,
-    }
+    };
   }
-  loadPicture(loadedPicture){
-    this.state ={
+  loadPicture(loadedPicture) {
+    this.state = {
       ...this.state,
       picture: this.state.picture.push(loadedPicture),
-    }
+    };
   }
-  savePicture(){
+  savePicture() {
     return this.state.picture[this.state.currentPicture];
   }
   changeFilter(filterName, filterProperty) {
     this.state = {
       ...this.state,
-      [filterName]: filterProperty
-    }
+      [filterName]: filterProperty,
+    };
   }
-  
+  openFullScreen() {
+    this.state = {
+      ...this.state,
+      fullScreen: true,
+    };
+    document.querySelector("html").requestFullscreen();
+  }
+  closeFullScreen() {
+    this.state = {
+      ...this.state,
+      fullScreen: false,
+    };
+    document.exitFullscreen();
+  }
+
+  init() {
+    const blur = document.querySelector("#blur");
+    blur.oninput = () => {
+      document.querySelector("#blurResult").innerHTML = blur.value;
+      this.changeFilter("blur", blur.value);
+    };
+
+    const invert = document.querySelector("#invert");
+    invert.oninput = () => {
+      document.querySelector("#invertResult").innerHTML = invert.value;
+      this.changeFilter("invert", invert.value);
+    };
+
+    const sepia = document.querySelector("#sepia");
+    sepia.oninput = () => {
+      document.querySelector("#sepiaResult").innerHTML = sepia.value;
+      this.changeFilter("sepia", sepia.value);
+    };
+
+    const saturate = document.querySelector("#saturate");
+    saturate.oninput = () => {
+      document.querySelector("#saturateResult").innerHTML = saturate.value;
+      this.changeFilter("saturate", saturate.value);
+    };
+
+    const hue = document.querySelector("#hue");
+    hue.oninput = () => {
+      document.querySelector("#hueResult").innerHTML = hue.value;
+      this.changeFilter("hue", saturate.value);
+    };
+
+    const fullSreenIcon = document.querySelector(".fullscreen");
+
+    fullSreenIcon.addEventListener("click", (event) => {
+      if (this.state.fullScreen) {
+        this.closeFullScreen();
+      } else {
+        
+        this.openFullScreen()
+      }
+    });
+
+    const resetBtn = document.querySelector('.btn-reset');
+    resetBtn.addEventListener("click", (event) => {
+      this.reset()
+    })
+  }
 }
 
 const App = new PhotoFilter({
@@ -45,38 +117,6 @@ const App = new PhotoFilter({
   fullScreen: false,
   picture: [],
   currentPicture: 0,
-})
+});
 
-const blur = document.querySelector('#blur');
-blur.oninput = () => {
-  document.querySelector('#blurResult').innerHTML = blur.value
-  App.changeFilter('blur', blur.value)
-  
-}
-
-const invert = document.querySelector('#invert');
-invert.oninput = () => {
-  document.querySelector('#invertResult').innerHTML = invert.value;
-  App.changeFilter('invert', invert.value);
-}
-
-const sepia = document.querySelector('#sepia');
-sepia.oninput = () => {
-  document.querySelector('#sepiaResult').innerHTML = sepia.value;
-  App.changeFilter('sepia', sepia.value);
-  console.log(App)
-}
-
-const saturate = document.querySelector('#saturate');
-saturate.oninput = () => {
-  document.querySelector('#saturateResult').innerHTML = saturate.value;
-  App.changeFilter('saturate', saturate.value);
-  console.log(App)
-}
-
-const hue = document.querySelector('#hue');
-hue.oninput = () => {
-  document.querySelector('#hueResult').innerHTML = hue.value;
-  App.changeFilter('hue', saturate.value);
-  console.log(App);
-}
+App.init();
