@@ -18,28 +18,28 @@
     <div class="filters">
       <label>
         Blur:
-        <input name="blur" data-sizing="px" type="range" min="0" max="10" value="0" />
-        <output name="result">0</output>
+        <input id="blur" name="blur" data-sizing="px" type="range" min="0" max="10" value="0" />
+        <output id="blurResult" name="result">0</output>
       </label>
       <label>
         Invert:
-        <input name="invert" data-sizing="%" type="range" min="0" max="100" value="0" />
-        <output name="result">0</output>
+        <input id="invert" name="invert" data-sizing="%" type="range" min="0" max="100" value="0" />
+        <output id="invertResult" name="result">0</output>
       </label>
       <label>
         Sepia:
-        <input name="sepia" data-sizing="%" type="range" min="0" max="100" value="0" />
-        <output name="result">0</output>
+        <input id="sepia" name="sepia" data-sizing="%" type="range" min="0" max="100" value="0" />
+        <output id="sepiaResult" name="result">0</output>
       </label>
       <label>
         Saturate:
-        <input name="saturate" data-sizing="%" type="range" min="0" max="200" value="100" />
-        <output name="result">100</output>
+        <input id="saturate" name="saturate" data-sizing="%" type="range" min="0" max="200" value="100" />
+        <output id="saturateResult" name="result">100</output>
       </label>
       <label>
         Hue rotate:
-        <input name="hue" data-sizing="deg" type="range" min="0" max="360" value="0" />
-        <output name="result">0</output>
+        <input id="hue" name="hue" data-sizing="deg" type="range" min="0" max="360" value="0" />
+        <output id="hueResult"name="result">0</output>
       </label>
     </div>
     <div class="editor">
@@ -64,5 +64,6 @@
     </div>
   </footer>
   <button class="fullscreen openfullscreen"></button>
+  <script src="index.js"></script>
 </body>
 </html>
