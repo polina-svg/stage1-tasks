@@ -13,21 +13,26 @@ class PhotoFilter {
     };
     const filterInputs = document.querySelectorAll(".filters label > input");
     const filterOutputs = document.querySelectorAll(".filters label > output");
-    console.log(filterOutputs)
-    filterInputs.forEach(item  =>{
-      console.log(filterInputs)
-      console.log(item.value)
+    filterInputs.forEach((item) => {
       item.value = 0;
-    })
-    filterOutputs.forEach(item  =>{
+    });
+    filterOutputs.forEach((item) => {
       item.innerHTML = 0;
-    })
+    });
   }
   nextPicture() {
-    this.state = {
-      ...this.state,
-      currentPicture: this.state.currentPicture + 1,
-    };
+    if (this.state.currentPicture > 19){
+      this.state = {
+        ...this.state,
+        currentPicture: 1,
+      };
+    }else{
+      this.state = {
+        ...this.state,
+        currentPicture: this.state.currentPicture + 1,
+      };
+    } 
+    this.createPictureUrl() 
   }
   loadPicture(loadedPicture) {
     this.state = {
@@ -58,8 +63,49 @@ class PhotoFilter {
     };
     document.exitFullscreen();
   }
+  pictureInit() {
+    const date = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    switch (true) {
+      case date > "6:0" && date < "11:59":
+        this.state = {
+          ...this.state,
+          currentUrl: "./assets/images/morning/",
+        };
+        break;
+      case date > "12:0" && date < "17:59":
+        this.state = {
+          ...this.state,
+          currentUrl: "./assets/images/day/",
+        };
+        break;
+      case date > "18:0" && date < "23:59":
+        this.state = {
+          ...this.state,
+          currentUrl: "./assets/images/evening/",
+        };
+        break;
+      case date > "00:0" && date < "5:59":
+        this.state = {
+          ...this.state,
+          currentUrl: "./assets/images/night/",
+        };
+        break;
+    }
+    this.createPictureUrl()
+  }
+
+  createPictureUrl(){
+    const picture = document.querySelector("#current");
+    picture.src = `${this.state.currentUrl}${
+      this.state.currentPicture < 10
+        ? "0" + this.state.currentPicture
+        : this.state.currentPicture
+    }.jpg`;
+  }
 
   init() {
+    this.pictureInit();
+
     const blur = document.querySelector("#blur");
     blur.oninput = () => {
       document.querySelector("#blurResult").innerHTML = blur.value;
@@ -96,16 +142,20 @@ class PhotoFilter {
       if (this.state.fullScreen) {
         this.closeFullScreen();
       } else {
-        
-        this.openFullScreen()
+        this.openFullScreen();
       }
     });
 
-    const resetBtn = document.querySelector('.btn-reset');
+    const resetBtn = document.querySelector(".btn-reset");
     resetBtn.addEventListener("click", (event) => {
-      this.reset()
-    })
+      this.reset();
+    });
+    const nextBtn = document.querySelector(".btn-next");
+    nextBtn.addEventListener("click", (event) => {
+      this.nextPicture();
+    });
   }
+   
 }
 
 const App = new PhotoFilter({
@@ -115,8 +165,8 @@ const App = new PhotoFilter({
   saturate: 0,
   hue: 0,
   fullScreen: false,
-  picture: [],
-  currentPicture: 0,
+  currentPicture: 1,
+  currentUrl: "",
 });
 
 App.init();
