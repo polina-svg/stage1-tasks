@@ -8,7 +8,7 @@ class PhotoFilter {
       blur: 0,
       invert: 0,
       sepia: 0,
-      saturare: 0,
+      saturare: 100,
       hue: 0,
     };
     const filterInputs = document.querySelectorAll(".filters label > input");
@@ -19,20 +19,21 @@ class PhotoFilter {
     filterOutputs.forEach((item) => {
       item.innerHTML = 0;
     });
+    this.createPictureUrl();
   }
   nextPicture() {
-    if (this.state.currentPicture > 19){
+    if (this.state.currentPicture > 19) {
       this.state = {
         ...this.state,
         currentPicture: 1,
       };
-    }else{
+    } else {
       this.state = {
         ...this.state,
         currentPicture: this.state.currentPicture + 1,
       };
-    } 
-    this.createPictureUrl() 
+    }
+    this.createPictureUrl();
   }
   loadPicture(loadedPicture) {
     this.state = {
@@ -41,13 +42,17 @@ class PhotoFilter {
     };
   }
   savePicture() {
-    return this.state.picture[this.state.currentPicture];
+    const link = document.createElement('a');
+    link.download = 'downloadPicture.png';
+    link.href = this.state.downLoadImage.toDataURL("image/png")
+    link.click();
   }
   changeFilter(filterName, filterProperty) {
     this.state = {
       ...this.state,
       [filterName]: filterProperty,
     };
+    this.createPictureUrl();
   }
   openFullScreen() {
     this.state = {
@@ -65,6 +70,7 @@ class PhotoFilter {
   }
   pictureInit() {
     const date = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    console.log(date);
     switch (true) {
       case date > "6:0" && date < "11:59":
         this.state = {
@@ -84,23 +90,40 @@ class PhotoFilter {
           currentUrl: "./assets/images/evening/",
         };
         break;
-      case date > "00:0" && date < "5:59":
+      case date > "00:00" && date < "5:59":
         this.state = {
           ...this.state,
           currentUrl: "./assets/images/night/",
         };
         break;
     }
-    this.createPictureUrl()
+    this.createPictureUrl();
   }
 
-  createPictureUrl(){
-    const picture = document.querySelector("#current");
-    picture.src = `${this.state.currentUrl}${
+  createPictureUrl() {
+    const image = new Image(500, 500);
+    const source = `${this.state.currentUrl}${
       this.state.currentPicture < 10
         ? "0" + this.state.currentPicture
         : this.state.currentPicture
     }.jpg`;
+    image.src = source;
+    image.addEventListener("load", (e) => {
+      const canvas = document.querySelector("#canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      ctx.filter = `sepia(${this.state.sepia / 100}) blur(${
+        this.state.blur * 2
+      }px) invert(${this.state.invert}%) saturate(${
+        this.state.saturate
+      }%) hue-rotate(${this.state.hue}deg)`;
+      ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+      this.state = {
+        ...this.state,
+        downLoadImage: canvas,
+      };
+    });
   }
 
   init() {
@@ -133,12 +156,11 @@ class PhotoFilter {
     const hue = document.querySelector("#hue");
     hue.oninput = () => {
       document.querySelector("#hueResult").innerHTML = hue.value;
-      this.changeFilter("hue", saturate.value);
+      this.changeFilter("hue", hue.value);
     };
 
     const fullSreenIcon = document.querySelector(".fullscreen");
-
-    fullSreenIcon.addEventListener("click", (event) => {
+    fullSreenIcon.addEventListener("click", () => {
       if (this.state.fullScreen) {
         this.closeFullScreen();
       } else {
@@ -147,26 +169,30 @@ class PhotoFilter {
     });
 
     const resetBtn = document.querySelector(".btn-reset");
-    resetBtn.addEventListener("click", (event) => {
+    resetBtn.addEventListener("click", () => {
       this.reset();
     });
     const nextBtn = document.querySelector(".btn-next");
-    nextBtn.addEventListener("click", (event) => {
+    nextBtn.addEventListener("click", () => {
       this.nextPicture();
     });
+    const saveBtn = document.querySelector(".btn-save");
+    saveBtn.addEventListener('click',() => {
+      this.savePicture()
+    })
   }
-   
 }
 
 const App = new PhotoFilter({
   blur: 0,
   invert: 0,
   sepia: 0,
-  saturate: 0,
+  saturate: 100,
   hue: 0,
   fullScreen: false,
   currentPicture: 1,
   currentUrl: "",
+  downLoadImage: ''
 });
 
 App.init();
