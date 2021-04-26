@@ -36,10 +36,7 @@ class PhotoFilter {
     this.createPictureUrl();
   }
   loadPicture(loadedPicture) {
-    this.state = {
-      ...this.state,
-      picture: this.state.picture.push(loadedPicture),
-    };
+    this.createPictureUrl(loadedPicture);
   }
   savePicture() {
     const link = document.createElement('a');
@@ -100,13 +97,18 @@ class PhotoFilter {
     this.createPictureUrl();
   }
 
-  createPictureUrl() {
+  createPictureUrl(loadImage) {
     const image = new Image(500, 500);
-    const source = `${this.state.currentUrl}${
-      this.state.currentPicture < 10
-        ? "0" + this.state.currentPicture
-        : this.state.currentPicture
-    }.jpg`;
+    let source;
+    if (loadImage) {
+      source = URL.createObjectURL(loadImage);
+    } else {
+      source = `${this.state.currentUrl}${
+        this.state.currentPicture < 10
+          ? "0" + this.state.currentPicture
+          : this.state.currentPicture
+      }.jpg`;
+    }
     image.src = source;
     image.addEventListener("load", (e) => {
       const canvas = document.querySelector("#canvas");
@@ -167,7 +169,15 @@ class PhotoFilter {
         this.openFullScreen();
       }
     });
-
+      
+    const buttonContainer = document.querySelector(".btn-container");
+    const buttons = document.querySelectorAll(".btn");
+    buttonContainer.addEventListener("click", (event) => {
+      if (event.target.tagName === "BUTTON") {
+        buttons.forEach((item) => item.classList.remove("btn-active"));
+        event.target.classList.add("btn-active");
+      }
+    })
     const resetBtn = document.querySelector(".btn-reset");
     resetBtn.addEventListener("click", () => {
       this.reset();
@@ -180,6 +190,10 @@ class PhotoFilter {
     saveBtn.addEventListener('click',() => {
       this.savePicture()
     })
+    const loadBtn = document.querySelector("#btnInput");
+    loadBtn.oninput = (event) => {
+      this.loadPicture(event.target.files[0])
+    };
   }
 }
 
